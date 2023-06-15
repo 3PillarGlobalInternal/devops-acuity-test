@@ -42,7 +42,9 @@ jobs:
         ls -la
         cd environments
         ls -la
-      
+        cd dev
+        ls -la
+        cat variables.tf
     - name: configure aws credentials
       uses: aws-actions/configure-aws-credentials@v2
       with:
