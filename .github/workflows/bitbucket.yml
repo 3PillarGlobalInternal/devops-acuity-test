@@ -1,7 +1,18 @@
 name: Bitbucket test
 
+permissions:
+ id-token: write
+ contents: read
+
 on: 
-  workflow_dispatch
+  workflow_dispatch:
+    inputs:
+      action:
+        type: choice
+        description: Make a choice
+        options:
+        - create
+        - destroy
   
 jobs:
   bitbucket:
