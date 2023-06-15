@@ -36,6 +36,13 @@ jobs:
     - name: SHOW FILES
       run: ls -la
       
+    - name: Show environments/dev
+      run: |
+        cd dummyrepo
+        ls -la
+        cd environments
+        ls -la
+      
     - name: configure aws credentials
       uses: aws-actions/configure-aws-credentials@v2
       with:
@@ -59,7 +66,7 @@ jobs:
 
     - name: Initialize Terraform
       run: |
-        cd dummyrepo/enviroments/dev 
+        cd dummyrepo/environments/dev 
         terraform init
 
     - name: Deploy to Development Environment
@@ -68,7 +75,7 @@ jobs:
         DB_USERNAME: ${{ secrets.DEV_RDS_USER }}
         MYSQL_PWD: ${{ secrets.DEV_RDS_PASS }}
       run: |
-        cd dummyrepo/enviroments/dev
+        cd dummyrepo/environments/dev
         terraform apply --auto-approve -var="admin_user=${DB_USERNAME}" -var="admin_pass=${MYSQL_PWD}" 
 
     - name: Destroy development Environment
@@ -77,7 +84,7 @@ jobs:
         DB_USERNAME: ${{ secrets.DEV_RDS_USER }}
         MYSQL_PWD: ${{ secrets.DEV_RDS_PASS }}
       run: |
-        cd dummyrepo/enviroments/dev
+        cd dummyrepo/environments/dev
         terraform destroy --auto-approve -var="admin_user=${DB_USERNAME}" -var="admin_pass=${MYSQL_PWD}" 
       
       
