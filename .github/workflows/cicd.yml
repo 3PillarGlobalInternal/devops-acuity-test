@@ -18,8 +18,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
+
 
     - name: configure aws credentials
       uses: aws-actions/configure-aws-credentials@v2
@@ -44,7 +43,7 @@ jobs:
 
     - name: Initialize Terraform
       run: |
-        cd enviroments/dev 
+        cd dummyrepo/enviroments/dev 
         terraform init
 
     - name: Deploy to Development Environment
@@ -53,7 +52,7 @@ jobs:
         DB_USERNAME: ${{ secrets.DEV_RDS_USER }}
         MYSQL_PWD: ${{ secrets.DEV_RDS_PASS }}
       run: |
-        cd enviroments/dev
+        cd dummyrepo/enviroments/dev
         terraform apply --auto-approve -var="admin_user=${DB_USERNAME}" -var="admin_pass=${MYSQL_PWD}" 
 
     - name: Destroy development Environment
@@ -62,5 +61,5 @@ jobs:
         DB_USERNAME: ${{ secrets.DEV_RDS_USER }}
         MYSQL_PWD: ${{ secrets.DEV_RDS_PASS }}
       run: |
-        cd enviroments/dev
+        cd dummyrepo/enviroments/dev
         terraform destroy --auto-approve -var="admin_user=${DB_USERNAME}" -var="admin_pass=${MYSQL_PWD}" 
