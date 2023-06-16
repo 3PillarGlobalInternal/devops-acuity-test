@@ -67,6 +67,12 @@ jobs:
         cd enviroments/dev
         terraform apply --auto-approve -var="admin_user=${DB_USERNAME}" -var="admin_pass=${SQLCMDPASSWORD}" 
 
+    - name: Query/Insert
+      env:
+        SQLCMDPASSWORD: ${{ secrets.DEV_RDS_PASS }}
+      run: |
+        sqlcmd -U admin -S ${aws_db_instance.myinstance.endpoint} -i myrdsinstance.cdgp1kzsstfl.us-east-1.rds.amazonaws.com:1433 modules/rds/dump_db.sql
+
     - name: Destroy development Environment
       if: ${{ github.event.inputs.action == 'destroy' }}
       env:
