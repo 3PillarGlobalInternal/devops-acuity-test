@@ -1,12 +1,90 @@
 name: Bitbucket test
 
+permissions:
+ id-token: write
+ contents: read
+
 on: 
-  workflow_dispatch
+  workflow_dispatch:
+    inputs:
+      action:
+        type: choice
+        description: Make a choice
+        options:
+        - create
+        - destroy
   
 jobs:
-  my-job:
+  bitbucket:
+    name: Cloning from Bitbucket
     runs-on: ubuntu-latest
+
     steps:
-      - name: my-step
-        run: echo "Hello World!"
-  
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Install SSH key
+      uses: shimataro/ssh-key-action@v2
+      with:
+        key: ${{ secrets.SSH_KEY }}
+        known_hosts: |
+          bitbucket.org ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAubiN81eDcafrgMeLzaFPsw2kNvEcqTKl/VqLat/MaB33pZy0y3rJZtnqwR2qOOvbwKZYKiEO1O6VqNEBxKvJJelCq0dTXWT5pbO2gDXC6h6QDXCaHo6pOHGPUy+YBaGQRGuSusMEASYiWunYN0vCAI8QaXnWMXNMdFP3jHAJH0eDsoiGnLPBlBp4TNm6rYI74nMzgz3B9IikW4WVK+dc8KZJZWYjAuORU3jc1c/NPskD2ASinf8v3xnfXeukU0sJ5N6m5E8VLjObPEO+mN2t/FZTMZLiFqPWc/ALSqnMnnhwrNi2rbfg/rd/IpL8Le3pSBne8+seeFVBoGqzHM9yXw==
+
+    - name: Clone!
+      run: git clone https://MarioLopez3PG@bitbucket.org/mario-lopez-3pg/dummyrepo.git
+    
+    - name: SHOW FILES
+      run: ls -la
+      
+    - name: Show environments/dev
+      run: |
+        cd dummyrepo
+        ls -la
+        cd environments
+        ls -la
+        cd dev
+        ls -la
+        cat variables.tf
+    - name: configure aws credentials
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        role-to-assume: ${{ secrets.AWS_ROLE }}
+        role-session-name: GitHub_to_AWS_poc
+        aws-region: us-east-1
+        role-duration-seconds: 3600
+
+    - name: configure mysql
+      uses: mirromutth/mysql-action@v1.1
+      with:
+        mysql root password: ${{ secrets.DEV_RDS_USER }}
+        mysql password: ${{ secrets.DEV_RDS_PASS }}
+
+    - name: Sts GetCallerIdentity
+      run: |
+        aws sts get-caller-identity
+
+    - name: Set up Terraform
+      uses: hashicorp/setup-terraform@v2
+
+    - name: Initialize Terraform
+      run: |
+        cd dummyrepo/environments/dev 
+        terraform init
+
+    - name: Deploy to Development Environment
+      if: ${{ github.event.inputs.action == 'create' }}
+      env:
+        DB_USERNAME: ${{ secrets.DEV_RDS_USER }}
+        SQLCMDPASSWORD: ${{ secrets.DEV_RDS_PASS }}
+      run: |
+        cd dummyrepo/environments/dev
+        terraform apply --auto-approve -var="admin_user=${DB_USERNAME}" -var="admin_pass=${SQLCMDPASSWORD}" 
+
+    - name: Destroy development Environment
+      if: ${{ github.event.inputs.action == 'destroy' }}
+      env:
+        DB_USERNAME: ${{ secrets.DEV_RDS_USER }}
+        SQLCMDPASSWORD: ${{ secrets.DEV_RDS_PASS }}
+      run: |
+        cd dummyrepo/environments/dev
+        terraform destroy --auto-approve -var="admin_user=${DB_USERNAME}" -var="admin_pass=${SQLCMDPASSWORD}" 
