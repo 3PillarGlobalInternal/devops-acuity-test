@@ -34,7 +34,7 @@ jobs:
 
     - name: Initialize Terraform
       run: |
-        cd enviroments/dev 
+        cd environments/dev 
         terraform init
 
     - name: Deploy to Development Environment
@@ -43,7 +43,7 @@ jobs:
         DB_USERNAME: ${{ secrets.DEV_RDS_USER }}
         SQLCMDPASSWORD: ${{ secrets.DEV_RDS_PASS }}
       run: |
-        cd enviroments/dev
+        cd environments/dev
         terraform apply --auto-approve -var="admin_user=${DB_USERNAME}" -var="admin_pass=${SQLCMDPASSWORD}" 
 
     - name: Destroy development Environment
@@ -52,5 +52,5 @@ jobs:
         DB_USERNAME: ${{ secrets.DEV_RDS_USER }}
         SQLCMDPASSWORD: ${{ secrets.DEV_RDS_PASS }}
       run: |
-        cd enviroments/dev
+        cd environments/dev
         terraform destroy --auto-approve -var="admin_user=${DB_USERNAME}" -var="admin_pass=${SQLCMDPASSWORD}" 
