@@ -42,13 +42,21 @@ jobs:
     #     sa-password: ${{ secrets.DEV_RDS_PASS }}
 
     # Install SQL Server client (e.g., FreeTDS) for connecting to the database
+    # - name: SQL Server
+    #   run: |
+    #     sudo apt-get install freetds-dev -y
     - name: SQL Server
       run: |
-        sudo apt-get install freetds-dev telnet -y
-
-    - name: Sts GetCallerIdentity
+        sudo apt-get install mssql-tools -y
+    - name: Query/Insert
+      env:
+        SQLCMDPASSWORD: ${{ secrets.DEV_RDS_PASS }}
       run: |
-        aws sts get-caller-identity
+        sqlcmd -U admin -S myrdsinstance.cdgp1kzsstfl.us-east-1.rds.amazonaws.com:3306 -i modules/rds/dump_db.sql
+
+    # - name: Sts GetCallerIdentity
+    #   run: |
+    #     aws sts get-caller-identity
 
     - name: Set up Terraform
       uses: hashicorp/setup-terraform@v2
@@ -66,13 +74,6 @@ jobs:
       run: |
         cd enviroments/dev
         terraform apply --auto-approve -var="admin_user=${DB_USERNAME}" -var="admin_pass=${SQLCMDPASSWORD}" 
-
-    - name: Query/Insert
-      env:
-        SQLCMDPASSWORD: ${{ secrets.DEV_RDS_PASS }}
-      run: |
-        telnet myrdsinstance.cdgp1kzsstfl.us-east-1.rds.amazonaws.com 3306
-        sqlcmd -U admin -S myrdsinstance.cdgp1kzsstfl.us-east-1.rds.amazonaws.com:3306 -i modules/rds/dump_db.sql
 
     - name: Destroy development Environment
       if: ${{ github.event.inputs.action == 'destroy' }}
