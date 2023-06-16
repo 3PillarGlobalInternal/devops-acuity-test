@@ -29,7 +29,7 @@ INSERT INTO customers (name, last_name, age, birthday) VALUES ('exercitationem',
 INSERT INTO customers (name, last_name, age, birthday) VALUES ('reprehenderit', 'Carroll', '', '1984-06-01');
 INSERT INTO customers (name, last_name, age, birthday) VALUES ('qui', 'Wilderman', '676', '1992-07-10');
 INSERT INTO customers (name, last_name, age, birthday) VALUES ('consequatur', 'Bauch', '9299508', '2005-08-07');
-GO 1000
+GO 10
 
 --
 -- TABLE STRUCTURE FOR: item
@@ -56,7 +56,7 @@ INSERT INTO item (name, price) VALUES ('voluptatem', '435.48');
 INSERT INTO item (name, price) VALUES ('velit', '50184.00');
 INSERT INTO item (name, price) VALUES ('fugiat', '9163.90');
 INSERT INTO item (name, price) VALUES ('et', '2736.92');
-GO 1000
+GO 10
 
 --
 -- TABLE STRUCTURE FOR: [user]
@@ -86,4 +86,4 @@ INSERT INTO [user] (name, last_name, age) VALUES ('ut', 'Altenwerth', '');
 INSERT INTO [user] (name, last_name, age) VALUES ('illum', 'Sipes', '32585');
 INSERT INTO [user] (name, last_name, age) VALUES ('consequatur', 'Stanton', '6405');
 INSERT INTO [user] (name, last_name, age) VALUES ('rerum', 'Swift', '66885203');
-GO 1000
+GO 10
