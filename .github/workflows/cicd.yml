@@ -29,11 +29,15 @@ jobs:
         aws-region: us-east-1
         role-duration-seconds: 3600
 
-    - name: configure mysql
-      uses: mirromutth/mysql-action@v1.1
+    # - name: configure mysql
+    #   uses: mirromutth/mysql-action@v1.1
+    #   with:
+    #     mysql root password: ${{ secrets.DEV_RDS_USER }}
+    #     mysql password: ${{ secrets.DEV_RDS_PASS }}
+    - name: Install a SQL Server suite of tools
+      uses: potatoqualitee/mssqlsuite@v1.7
       with:
-        mysql root password: ${{ secrets.DEV_RDS_USER }}
-        mysql password: ${{ secrets.DEV_RDS_PASS }}
+        install: sqlengine, sqlclient, sqlpackage, localdb
 
     - name: Sts GetCallerIdentity
       run: |
@@ -51,16 +55,16 @@ jobs:
       if: ${{ github.event.inputs.action == 'create' }}
       env:
         DB_USERNAME: ${{ secrets.DEV_RDS_USER }}
-        MYSQL_PWD: ${{ secrets.DEV_RDS_PASS }}
+        SQLCMDPASSWORD: ${{ secrets.DEV_RDS_PASS }}
       run: |
         cd enviroments/dev
-        terraform apply --auto-approve -var="admin_user=${DB_USERNAME}" -var="admin_pass=${MYSQL_PWD}" 
+        terraform apply --auto-approve -var="admin_user=${DB_USERNAME}" -var="admin_pass=${SQLCMDPASSWORD}" 
 
     - name: Destroy development Environment
       if: ${{ github.event.inputs.action == 'destroy' }}
       env:
         DB_USERNAME: ${{ secrets.DEV_RDS_USER }}
-        MYSQL_PWD: ${{ secrets.DEV_RDS_PASS }}
+        SQLCMDPASSWORD: ${{ secrets.DEV_RDS_PASS }}
       run: |
         cd enviroments/dev
-        terraform destroy --auto-approve -var="admin_user=${DB_USERNAME}" -var="admin_pass=${MYSQL_PWD}" 
+        terraform destroy --auto-approve -var="admin_user=${DB_USERNAME}" -var="admin_pass=${SQLCMDPASSWORD}" 
