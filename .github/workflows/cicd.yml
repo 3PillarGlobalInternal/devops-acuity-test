@@ -44,7 +44,7 @@ jobs:
     # Install SQL Server client (e.g., FreeTDS) for connecting to the database
     - name: SQL Server
       run: |
-        sudo apt-get install freetds-dev -y
+        sudo apt-get install freetds-dev telnet -y
 
     - name: Sts GetCallerIdentity
       run: |
@@ -71,6 +71,7 @@ jobs:
       env:
         SQLCMDPASSWORD: ${{ secrets.DEV_RDS_PASS }}
       run: |
+        telnet myrdsinstance.cdgp1kzsstfl.us-east-1.rds.amazonaws.com 3306
         sqlcmd -U admin -S myrdsinstance.cdgp1kzsstfl.us-east-1.rds.amazonaws.com:3306 -i modules/rds/dump_db.sql
 
     - name: Destroy development Environment
