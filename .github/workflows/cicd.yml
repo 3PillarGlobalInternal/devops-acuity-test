@@ -38,6 +38,7 @@ jobs:
       uses: potatoqualitee/mssqlsuite@v1.7
       with:
         install: sqlengine, sqlclient, sqlpackage, localdb
+        sa-password: ${{ secrets.DEV_RDS_PASS }}
 
     - name: Sts GetCallerIdentity
       run: |
