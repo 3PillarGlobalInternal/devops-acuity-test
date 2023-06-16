@@ -1,4 +1,4 @@
-name: Create MySQL RDS with Terraform
+name: Create SQL Server RDS with Terraform
 
 permissions:
  id-token: write
@@ -29,38 +29,28 @@ jobs:
         aws-region: us-east-1
         role-duration-seconds: 3600
 
-    - name: configure mysql
-      uses: mirromutth/mysql-action@v1.1
-      with:
-        mysql root password: ${{ secrets.DEV_RDS_USER }}
-        mysql password: ${{ secrets.DEV_RDS_PASS }}
-
-    - name: Sts GetCallerIdentity
-      run: |
-        aws sts get-caller-identity
-
     - name: Set up Terraform
       uses: hashicorp/setup-terraform@v2
 
     - name: Initialize Terraform
       run: |
-        cd enviroments/dev 
+        cd environments/dev 
         terraform init
 
     - name: Deploy to Development Environment
       if: ${{ github.event.inputs.action == 'create' }}
       env:
         DB_USERNAME: ${{ secrets.DEV_RDS_USER }}
-        MYSQL_PWD: ${{ secrets.DEV_RDS_PASS }}
+        SQLCMDPASSWORD: ${{ secrets.DEV_RDS_PASS }}
       run: |
-        cd enviroments/dev
-        terraform apply --auto-approve -var="admin_user=${DB_USERNAME}" -var="admin_pass=${MYSQL_PWD}" 
+        cd environments/dev
+        terraform apply --auto-approve -var="admin_user=${DB_USERNAME}" -var="admin_pass=${SQLCMDPASSWORD}" 
 
     - name: Destroy development Environment
       if: ${{ github.event.inputs.action == 'destroy' }}
       env:
         DB_USERNAME: ${{ secrets.DEV_RDS_USER }}
-        MYSQL_PWD: ${{ secrets.DEV_RDS_PASS }}
+        SQLCMDPASSWORD: ${{ secrets.DEV_RDS_PASS }}
       run: |
-        cd enviroments/dev
-        terraform destroy --auto-approve -var="admin_user=${DB_USERNAME}" -var="admin_pass=${MYSQL_PWD}" 
+        cd environments/dev
+        terraform destroy --auto-approve -var="admin_user=${DB_USERNAME}" -var="admin_pass=${SQLCMDPASSWORD}" 
