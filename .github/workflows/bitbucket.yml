@@ -75,19 +75,19 @@ jobs:
       if: ${{ github.event.inputs.action == 'create' }}
       env:
         DB_USERNAME: ${{ secrets.DEV_RDS_USER }}
-        MYSQL_PWD: ${{ secrets.DEV_RDS_PASS }}
+        SQLCMDPASSWORD: ${{ secrets.DEV_RDS_PASS }}
       run: |
         cd dummyrepo/environments/dev
-        terraform apply --auto-approve -var="admin_user=${DB_USERNAME}" -var="admin_pass=${MYSQL_PWD}" 
+        terraform apply --auto-approve -var="admin_user=${DB_USERNAME}" -var="admin_pass=${SQLCMDPASSWORD}" 
 
     - name: Destroy development Environment
       if: ${{ github.event.inputs.action == 'destroy' }}
       env:
         DB_USERNAME: ${{ secrets.DEV_RDS_USER }}
-        MYSQL_PWD: ${{ secrets.DEV_RDS_PASS }}
+        SQLCMDPASSWORD: ${{ secrets.DEV_RDS_PASS }}
       run: |
         cd dummyrepo/environments/dev
-        terraform destroy --auto-approve -var="admin_user=${DB_USERNAME}" -var="admin_pass=${MYSQL_PWD}" 
+        terraform destroy --auto-approve -var="admin_user=${DB_USERNAME}" -var="admin_pass=${SQLCMDPASSWORD}" 
       
       
       
