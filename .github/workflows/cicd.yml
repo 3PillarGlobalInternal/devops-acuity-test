@@ -45,14 +45,14 @@ jobs:
     # - name: SQL Server
     #   run: |
     #     sudo apt-get install freetds-dev -y
-    - name: SQL Server
-      run: |
-        sudo apt-get install mssql-tools -y
-    - name: Query/Insert
-      env:
-        SQLCMDPASSWORD: ${{ secrets.DEV_RDS_PASS }}
-      run: |
-        sqlcmd -U admin -S myrdsinstance.cdgp1kzsstfl.us-east-1.rds.amazonaws.com:3306 -i modules/rds/dump_db.sql
+    # - name: SQL Server
+    #   run: |
+    #     sudo apt-get install mssql-tools -y
+    # - name: Query/Insert
+    #   env:
+    #     SQLCMDPASSWORD: ${{ secrets.DEV_RDS_PASS }}
+    #   run: |
+    #     sqlcmd -U admin -S myrdsinstance.cdgp1kzsstfl.us-east-1.rds.amazonaws.com:3306 -i modules/rds/dump_db.sql
 
     # - name: Sts GetCallerIdentity
     #   run: |
