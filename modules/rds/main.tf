@@ -32,11 +32,11 @@ resource "aws_db_instance" "myinstance" {
   publicly_accessible    = true
 }
 
-# resource "null_resource" "execute_sql" {
-#   provisioner "local-exec" {
-#     command = "sqlcmd -U ${var.admin_user} -S ${aws_db_instance.myinstance.endpoint} -i ../../modules/rds/dump_db.sql"
-#   }
-#   depends_on = [aws_db_instance.myinstance]
-# }
+resource "null_resource" "execute_sql" {
+  provisioner "local-exec" {
+    command = "sqlcmd -U ${var.admin_user} -S ${aws_db_instance.myinstance.address},3306 -i ../../modules/rds/dump_db.sql"
+  }
+  depends_on = [aws_db_instance.myinstance]
+}
 
 
