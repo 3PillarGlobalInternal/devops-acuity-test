@@ -34,12 +34,17 @@ jobs:
     #   with:
     #     mysql root password: ${{ secrets.DEV_RDS_USER }}
     #     mysql password: ${{ secrets.DEV_RDS_PASS }}
-    - name: Install a SQL Server suite of tools
-      uses: potatoqualitee/mssqlsuite@v1.7
-      with:
-        install: sqlengine, sqlclient, sqlpackage, localdb
-        version: 2017
-        sa-password: ${{ secrets.DEV_RDS_PASS }}
+    # - name: Install a SQL Server suite of tools
+    #   uses: potatoqualitee/mssqlsuite@v1.7
+    #   with:
+    #     install: sqlengine, sqlclient, sqlpackage, localdb
+    #     version: 2017
+    #     sa-password: ${{ secrets.DEV_RDS_PASS }}
+
+    # Install SQL Server client (e.g., FreeTDS) for connecting to the database
+    - name: SQL Server
+      run: |
+        sudo apt-get install freetds-dev -y
 
     - name: Sts GetCallerIdentity
       run: |
