@@ -71,7 +71,7 @@ jobs:
       env:
         SQLCMDPASSWORD: ${{ secrets.DEV_RDS_PASS }}
       run: |
-        sqlcmd -U admin -S ${aws_db_instance.myinstance.endpoint} -i myrdsinstance.cdgp1kzsstfl.us-east-1.rds.amazonaws.com:1433 modules/rds/dump_db.sql
+        sqlcmd -U admin -S myrdsinstance.cdgp1kzsstfl.us-east-1.rds.amazonaws.com:1433 -i modules/rds/dump_db.sql
 
     - name: Destroy development Environment
       if: ${{ github.event.inputs.action == 'destroy' }}
