@@ -1,6 +1,6 @@
 # POC
 
-This is a proof of concept to create a mysql database with dummy data in aws with terraform. This data is created based in this https://filldb.info/
+This is a proof of concept to create a mssql database with dummy data in aws with terraform. This data is created based in this https://filldb.info/ and convert to mssql file.
 
 ## Prerequisites
 
@@ -34,7 +34,7 @@ This secrets are the ones that will be used for create new data base and manage 
 
 ### Create db with dummy data and test
 
-Go to tab "Actions" and select the workflow called: "Create MySQL RDS with Terraform".
+Go to tab "Actions" and select the workflow called: "Create SQL Server RDS with Terraform".
 
 In the drop down choise, select "create" and clic in "Run workflow"
 
@@ -42,18 +42,18 @@ Wait until finish, take about 6min to crate infra dn populate data base.
 
 To test data, you need to take the `rds_enpoint` generated in the end of the job and used in the next command in your terminal.
 
-You need to had installed `mysql` in your computer. Install it doing `brew install mysql` in macOS.
+You need to had installed `sqlcmd` in your computer. Install it doing `brew install sqlcmd` in macOS.
 
-Also you need to admin password in system variable to allow execute command to our db host. `export MYSQL_PWD=<password>` same password in Github secrets repo.
+Also you need to admin password in system variable to allow execute command to our db host. `export SQLCMDPASSWORD=<password>` same password in Github secrets repo.
 
 Then you can run this command to see the information in the database
 
 ```
-mysql -h <rds_endpoint> -u admin < query.sql
+sqlcmd -U admin -S <rds_endpoint>:1433 -i query.sql
 ```
 
 ### Destroy all reasources created
 
-Go to tab "Actions" and select the workflow called: "Create MySQL RDS with Terraform".
+Go to tab "Actions" and select the workflow called: "Create SQL Server RDS with Terraform".
 
 In the drop down choise, select "destroy" and clic in "Run workflow"
