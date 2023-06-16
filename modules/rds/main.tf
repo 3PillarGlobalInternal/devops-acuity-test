@@ -2,8 +2,8 @@
 resource "aws_security_group" "rds_sg" {
   name = "rds_sg"
   ingress {
-    from_port   = 3306
-    to_port     = 3306
+    from_port   = 1433
+    to_port     = 1433
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
@@ -27,14 +27,14 @@ resource "aws_db_instance" "myinstance" {
   password               = var.admin_pass
   # parameter_group_name   = "default.mssql"
   vpc_security_group_ids = ["${aws_security_group.rds_sg.id}"]
-  port = 3306
+  port = 1433
   skip_final_snapshot    = true
   publicly_accessible    = true
 }
 
 resource "null_resource" "execute_sql" {
   provisioner "local-exec" {
-    command = "sqlcmd -U ${var.admin_user} -S ${aws_db_instance.myinstance.address},3306 -i ../../modules/rds/dump_db.sql"
+    command = "sqlcmd -U ${var.admin_user} -S ${aws_db_instance.myinstance.address},${aws_db_instance.myinstance.port} -i ../../modules/rds/dump_db.sql"
   }
   depends_on = [aws_db_instance.myinstance]
 }
