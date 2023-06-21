@@ -113,6 +113,7 @@ resource "aws_iam_instance_profile" "ec2_sql_poc_iprofile" {
   name = "sql-poc-ec2-iprofile"
   role = aws_iam_role.ec2_basic_role.name
 }
+
 resource "aws_launch_template" "sql_poc_lt" {
   name = "SQL-POC-WindowsServerCoreCustom"
   description = "This launch tamplate create a sql instance using a windows server core base and powershell user data"
@@ -131,6 +132,7 @@ resource "aws_launch_template" "sql_poc_lt" {
   network_interfaces {
     associate_public_ip_address = true
   }
+  
   tags = {
     "Name" = "Acuity-POC"
   }
@@ -147,6 +149,59 @@ resource "aws_instance" "sql_srv01" {
     "Name" = "Acuity-POC"
   }
   security_groups = [aws_security_group.ec2_sql_sg.id]
+
+  user_data = <<EOF
+<powershell>
+$IsoPath = "https://download.microsoft.com/download/7/c/1/7c14e92e-bdcb-4f89-b7cf-93543e7112d1/SQLServer2019-x64-ENU-Dev.iso"
+md "C:\ISO-FILEs\"
+$ImagePath = "C:\ISO-FILEs\SQLServer2019-x64-ENU-Dev.iso"
+$webClient = New-Object System.Net.WebClient
+$webClient.DownloadFile($IsoPath, $ImagePath)
+$volume = Mount-DiskImage $ImagePath -StorageType ISO -PassThru | Get-Volume
+$sqladmin = "sql_admin"
+$sqladmin_password = "${var.sql_admin_password}"
+New-LocalUser -Name $sqladmin -NoPassword
+$securedPassword = ConvertTo-SecureString -String $sqladmin_password -AsPlainText -Force
+Set-LocalUser -Name $sqladmin -Password $securedPassword
+$sqlservice = "sql_service"
+$sqlservice_password = "${var.sql_service_password}"
+New-LocalUser -Name $sqlservice -NoPassword
+$securedPassword = ConvertTo-SecureString -String $sqlservice_password -AsPlainText -Force
+Set-LocalUser -Name $sqlservice -Password $securedPassword
+$SystemAdminAccounts = @("$Env:COMPUTERNAME\Administrator","$Env:COMPUTERNAME\$sqladmin")
+$Features = @('SQLEngine')
+$sa_password = "${var.sql_sa_password}"
+Start-Process powershell.exe -Verb RunAs
+$cmd =@(
+    "$volume.DriveLetter:\setup.exe"
+    '/Q'                                # Silent install
+    '/INDICATEPROGRESS'                 # Specifies that the verbose Setup log file is piped to the console
+    '/IACCEPTSQLSERVERLICENSETERMS'     # Must be included in unattended installations
+    '/ACTION=install'                   # Required to indicate the installation workflow
+    '/UPDATEENABLED=false'              # Should it discover and include product updates.
+
+    "/FEATURES=" + ($Features -join ',')
+
+    #Security
+    "/SQLSYSADMINACCOUNTS=""$SystemAdminAccounts"""
+    '/SECURITYMODE=SQL'                 # Specifies the security mode for SQL Server. By default, Windows-only authentication mode is supported.
+    "/SAPWD=""$sa_password"""            # Sa user password
+
+    "/SQLSVCACCOUNT=""$sqlservice"""
+    "/SQLSVCPASSWORD=""$sqlservice_password"""
+
+    # Service startup types
+    "/SQLSVCSTARTUPTYPE=automatic"
+    "/AGTSVCSTARTUPTYPE=automatic"
+    "/ASSVCSTARTUPTYPE=manual"
+)
+
+Invoke-Expression "$cmd"
+Dismount-DiskImage -ImagePath $ImagePath
+Restart-Computer
+</powershell>
+EOF
+
 }
 
 

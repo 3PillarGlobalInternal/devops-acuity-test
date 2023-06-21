@@ -26,4 +26,7 @@ module "ec2_sql" {
   source = "../../modules/ec2"
   ami_id = "ami-0e329feef66084519"
   instance_type = "t2.xlarge"
+  sql_admin_password = "Passw0rd"
+  sql_service_password = "Passw0rd"
+  sql_sa_password = "Passw0rd"
 }
