@@ -120,48 +120,33 @@ resource "aws_launch_template" "sql_poc_lt" {
   instance_type = var.instance_type
 
   iam_instance_profile {
-    name = aws_iam_instance_profile.ec2_sql_poc_iprofile.name
+    arn = aws_iam_instance_profile.ec2_sql_poc_iprofile.arn
   }
-
   block_device_mappings {
     device_name = "/dev/sda1"
     ebs {
       volume_size = 100
     }
   }
+  network_interfaces {
+    associate_public_ip_address = true
+  }
   tags = {
     "Name" = "Acuity-POC"
   }
 }
 
-resource "aws_network_interface" "sql_srv01_int" {
-  subnet_id = aws_subnet.poc_public_subnet.id
-  security_groups = [aws_security_group.ec2_sql_sg.id]
-  tags = {
-    "Name" = "Acuity-POC"
-  }
-}
-
-resource "aws_eip" "sql_srv01_eip" {
-  vpc = true
-  network_interface = aws_network_interface.sql_srv01_int.id
-  tags = {
-    "Name" = "Acuity-POC"
-  }
-}
 
 resource "aws_instance" "sql_srv01" {
   launch_template {
     id = aws_launch_template.sql_poc_lt.id
     version = aws_launch_template.sql_poc_lt.latest_version
   }
-  network_interface {
-    network_interface_id = aws_network_interface.sql_srv01_int.id
-    device_index         = 0
-  }
+  subnet_id = aws_subnet.poc_public_subnet.id
   tags = {
     "Name" = "Acuity-POC"
   }
+  security_groups = [aws_security_group.ec2_sql_sg.id]
 }
 
 
