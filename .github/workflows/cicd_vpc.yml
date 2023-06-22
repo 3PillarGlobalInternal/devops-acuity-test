@@ -1,0 +1,50 @@
+name: Create SQL Server RDS with Terraform
+
+permissions:
+ id-token: write
+ contents: read
+
+on: 
+  workflow_dispatch:
+    inputs:
+      action:
+        type: choice
+        description: Make a choice
+        options:
+        - create
+        - destroy
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: configure aws credentials
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        role-to-assume: ${{ secrets.AWS_ROLE }}
+        role-session-name: GitHub_to_AWS_poc
+        aws-region: us-east-1
+        role-duration-seconds: 3600
+
+    - name: Set up Terraform
+      uses: hashicorp/setup-terraform@v2
+
+    - name: Initialize Terraform
+      run: |
+        cd environments/dev-vpc
+        terraform init
+
+    - name: Deploy to Development Environment
+      if: ${{ github.event.inputs.action == 'create' }}
+      run: |
+        cd environments/dev
+        terraform apply --auto-approve
+
+    - name: Destroy development Environment
+      if: ${{ github.event.inputs.action == 'destroy' }}
+      run: |
+        cd environments/dev
+        terraform destroy --auto-approve

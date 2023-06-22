@@ -56,30 +56,3 @@ resource "aws_route" "poc_internet_rt" {
   route_table_id = aws_route_table.poc_rt.id
   gateway_id = aws_internet_gateway.poc_igw.id
 }
-
-resource "aws_security_group" "ec2_sql_sg" {
-  name = "ec2_sql_sg"
-  ingress {
-    from_port   = 1433
-    to_port     = 1433
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-  ingress {
-    from_port   = 3389
-    to_port     = 3389
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-  vpc_id = aws_vpc.sql_poc.id
-
-  tags = {
-    "Name" = "Acuity-POC"
-  }
-}
