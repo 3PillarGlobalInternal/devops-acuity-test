@@ -22,15 +22,16 @@ provider "aws" {
   region = "us-east-1"
 }
 
-/*module "ec2_sql" {
-  source = "../../modules/ec2"
-  ami_id = "ami-0e329feef66084519"
-  instance_type = "t2.xlarge"
-  sql_admin_password = "Passw0rd"
-  sql_service_password = "Passw0rd"
-  sql_sa_password = "Passw0rd"
-}*/
-
 module "vpc" {
   source = "../../modules/vpc"
 }
+
+module "ec2_sql" {
+  source = "../../modules/ec2"
+  ami_id = "ami-0cce4fb33302cadcb"
+  instance_type = "t2.xlarge"
+  public_subnet_id = module.vpc.public_subnet_id
+  security_group_id = module.vpc.security_group_id
+  depends_on = [ module.vpc ]
+}
+

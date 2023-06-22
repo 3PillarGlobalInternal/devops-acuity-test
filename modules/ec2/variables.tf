@@ -7,14 +7,10 @@ variable "instance_type" {
   type    = string
 }
 
-variable "sql_admin_password" {
+variable "public_subnet_id" {
   type    = string
 }
 
-variable "sql_service_password" {
-  type    = string
-}
-
-variable "sql_sa_password" {
+variable "security_group_id" {
   type    = string
 }
