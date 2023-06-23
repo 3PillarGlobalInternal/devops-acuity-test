@@ -50,5 +50,20 @@ resource "aws_instance" "sql_srv01" {
 
 }
 
+resource "null_resource" "wait" {
+  provisioner "local-exec" {
+    command = "sleep 300"  
+  }
+  depends_on = [aws_instance.sql_srv01]
+}
 
+resource "null_resource" "execute_sql" {
+  provisioner "local-exec" {
+    command = "sqlcmd -U ${var.ec2_sql_user} -S ${aws_instance.sql_srv01.public_ip},1433 -i ../../modules/ec2/dump_db.sql"
+  }
+  provisioner "local-exec" {
+    command = "sleep 300"  
+  }
+  depends_on = [null_resource.wait]
+}
 

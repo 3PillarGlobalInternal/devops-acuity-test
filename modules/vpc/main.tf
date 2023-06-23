@@ -16,24 +16,6 @@ resource "aws_subnet" "mlink_public_subnet-a" {
   }
 }
 
-resource "aws_subnet" "mlink_public_subnet-b" {
-  vpc_id            = aws_vpc.mlink_vpc.id
-  cidr_block        = "172.200.48.0/20"
-  availability_zone = "us-east-1b"
-  tags = {
-    Name = "mlink-public-subnet-b"
-  }
-}
-
-resource "aws_subnet" "mlink_public_subnet-c" {
-  vpc_id            = aws_vpc.mlink_vpc.id
-  cidr_block        = "172.200.96.0/20"
-  availability_zone = "us-east-1c"
-  tags = {
-    Name = "mlink-public-subnet-c"
-  }
-}
-
 # Private subnets for 3 availability zones
 resource "aws_subnet" "mlink_private_subnet-a" {
   vpc_id            = aws_vpc.mlink_vpc.id
@@ -44,24 +26,6 @@ resource "aws_subnet" "mlink_private_subnet-a" {
   }
 }
 
-resource "aws_subnet" "mlink_private_subnet-b" {
-  vpc_id            = aws_vpc.mlink_vpc.id
-  cidr_block        = "172.200.64.0/20"
-  availability_zone = "us-east-1b"
-  tags = {
-    Name = "mlink-private-subnet-b"
-  }
-}
-
-resource "aws_subnet" "mlink_private_subnet-c" {
-  vpc_id            = aws_vpc.mlink_vpc.id
-  cidr_block        = "172.200.112.0/20"
-  availability_zone = "us-east-1c"
-  tags = {
-    Name = "mlink-private-subnet-c"
-  }
-}
-
 # DB subnets for 3 availability zones
 resource "aws_subnet" "mlink_db_subnet-a" {
   vpc_id            = aws_vpc.mlink_vpc.id
@@ -69,24 +33,6 @@ resource "aws_subnet" "mlink_db_subnet-a" {
   availability_zone = "us-east-1a"
   tags = {
     Name = "mlink-db-subnet-a"
-  }
-}
-
-resource "aws_subnet" "mlink_db_subnet-b" {
-  vpc_id            = aws_vpc.mlink_vpc.id
-  cidr_block        = "172.200.80.0/20"
-  availability_zone = "us-east-1b"
-  tags = {
-    Name = "mlink-db-subnet-b"
-  }
-}
-
-resource "aws_subnet" "mlink_db_subnet-c" {
-  vpc_id            = aws_vpc.mlink_vpc.id
-  cidr_block        = "172.200.128.0/20"
-  availability_zone = "us-east-1c"
-  tags = {
-    Name = "mlink-db-subnet-c"
   }
 }
 
@@ -117,40 +63,16 @@ resource "aws_route_table_association" "public_rt_a" {
   subnet_id = aws_subnet.mlink_public_subnet-a.id
   route_table_id = aws_route_table.mlink_public_rt.id
 }
-resource "aws_route_table_association" "public_rt_b" {
-  subnet_id = aws_subnet.mlink_public_subnet-b.id
-  route_table_id = aws_route_table.mlink_public_rt.id
-}
-resource "aws_route_table_association" "public_rt_c" {
-  subnet_id = aws_subnet.mlink_public_subnet-c.id
-  route_table_id = aws_route_table.mlink_public_rt.id
-}
 
 # Private subnets route table association
 resource "aws_route_table_association" "private_rt_a" {
   subnet_id = aws_subnet.mlink_private_subnet-a.id
   route_table_id = aws_route_table.mlink_private_rt.id
 }
-resource "aws_route_table_association" "private_rt_b" {
-  subnet_id = aws_subnet.mlink_private_subnet-b.id
-  route_table_id = aws_route_table.mlink_private_rt.id
-}
-resource "aws_route_table_association" "private_rt_c" {
-  subnet_id = aws_subnet.mlink_private_subnet-c.id
-  route_table_id = aws_route_table.mlink_private_rt.id
-}
 
 # DB subnets route table association
 resource "aws_route_table_association" "db_rt_a" {
   subnet_id = aws_subnet.mlink_db_subnet-a.id
-  route_table_id = aws_route_table.mlink_db_rt.id
-}
-resource "aws_route_table_association" "db_rt_b" {
-  subnet_id = aws_subnet.mlink_db_subnet-b.id
-  route_table_id = aws_route_table.mlink_db_rt.id
-}
-resource "aws_route_table_association" "db_rt_c" {
-  subnet_id = aws_subnet.mlink_db_subnet-c.id
   route_table_id = aws_route_table.mlink_db_rt.id
 }
 
