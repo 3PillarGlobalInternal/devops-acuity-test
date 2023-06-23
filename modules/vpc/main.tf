@@ -1,85 +1,170 @@
-#Network Definition 
-resource "aws_vpc" "sql_poc" {
+# Network Definition 
+resource "aws_vpc" "mlink_vpc" {
   cidr_block = "172.200.0.0/16"
-
   tags = {
-    Name = "Acuity-POC"
+    Name = "mlink-vpc"
   }
 }
 
-resource "aws_subnet" "poc_private_subnet" {
-  vpc_id            = aws_vpc.sql_poc.id
-  cidr_block        = "172.200.0.0/24"
+# Public subnets for 3 availability zones
+resource "aws_subnet" "mlink_public_subnet-a" {
+  vpc_id            = aws_vpc.mlink_vpc.id
+  cidr_block        = "172.200.0.0/20"
   availability_zone = "us-east-1a"
-
   tags = {
-    Name = "Acuity-POC"
+    Name = "mlink-public-subnet-a"
   }
 }
 
-resource "aws_subnet" "poc_public_subnet" {
-  vpc_id            = aws_vpc.sql_poc.id
-  cidr_block        = "172.200.1.0/24"
+resource "aws_subnet" "mlink_public_subnet-b" {
+  vpc_id            = aws_vpc.mlink_vpc.id
+  cidr_block        = "172.200.48.0/20"
+  availability_zone = "us-east-1b"
+  tags = {
+    Name = "mlink-public-subnet-b"
+  }
+}
+
+resource "aws_subnet" "mlink_public_subnet-c" {
+  vpc_id            = aws_vpc.mlink_vpc.id
+  cidr_block        = "172.200.96.0/20"
+  availability_zone = "us-east-1c"
+  tags = {
+    Name = "mlink-public-subnet-c"
+  }
+}
+
+# Private subnets for 3 availability zones
+resource "aws_subnet" "mlink_private_subnet-a" {
+  vpc_id            = aws_vpc.mlink_vpc.id
+  cidr_block        = "172.200.16.0/20"
   availability_zone = "us-east-1a"
-
   tags = {
-    Name = "Acuity-POC"
+    Name = "mlink-private-subnet-a"
   }
 }
 
-resource "aws_route_table" "poc_rt" {
-  vpc_id = aws_vpc.sql_poc.id
+resource "aws_subnet" "mlink_private_subnet-b" {
+  vpc_id            = aws_vpc.mlink_vpc.id
+  cidr_block        = "172.200.64.0/20"
+  availability_zone = "us-east-1b"
   tags = {
-    "Name" = "Acuity-POC"
+    Name = "mlink-private-subnet-b"
   }
 }
 
-resource "aws_route_table_association" "public_rt" {
-  subnet_id = aws_subnet.poc_public_subnet.id
-  route_table_id = aws_route_table.poc_rt.id
-}
-
-resource "aws_route_table_association" "private_rt" {
-  subnet_id = aws_subnet.poc_private_subnet.id
-  route_table_id = aws_route_table.poc_rt.id
-}
-
-resource "aws_internet_gateway" "poc_igw" {
-  vpc_id = aws_vpc.sql_poc.id
+resource "aws_subnet" "mlink_private_subnet-c" {
+  vpc_id            = aws_vpc.mlink_vpc.id
+  cidr_block        = "172.200.112.0/20"
+  availability_zone = "us-east-1c"
   tags = {
-    "Name" = "Acuity-POC"
+    Name = "mlink-private-subnet-c"
   }
 }
 
-resource "aws_route" "poc_internet_rt" {
+# DB subnets for 3 availability zones
+resource "aws_subnet" "mlink_db_subnet-a" {
+  vpc_id            = aws_vpc.mlink_vpc.id
+  cidr_block        = "172.200.32.0/20"
+  availability_zone = "us-east-1a"
+  tags = {
+    Name = "mlink-db-subnet-a"
+  }
+}
+
+resource "aws_subnet" "mlink_db_subnet-b" {
+  vpc_id            = aws_vpc.mlink_vpc.id
+  cidr_block        = "172.200.80.0/20"
+  availability_zone = "us-east-1b"
+  tags = {
+    Name = "mlink-db-subnet-b"
+  }
+}
+
+resource "aws_subnet" "mlink_db_subnet-c" {
+  vpc_id            = aws_vpc.mlink_vpc.id
+  cidr_block        = "172.200.128.0/20"
+  availability_zone = "us-east-1c"
+  tags = {
+    Name = "mlink-db-subnet-c"
+  }
+}
+
+# VPC Route tables
+resource "aws_route_table" "mlink_public_rt" {
+  vpc_id = aws_vpc.mlink_vpc.id
+  tags = {
+    Name = "mlink-public-rt"
+  }
+}
+
+resource "aws_route_table" "mlink_private_rt" {
+  vpc_id = aws_vpc.mlink_vpc.id
+  tags = {
+    Name = "mlink-private-rt"
+  }
+}
+
+resource "aws_route_table" "mlink_db_rt" {
+  vpc_id = aws_vpc.mlink_vpc.id
+  tags = {
+    Name = "mlink-db-rt"
+  }
+}
+
+# Public subnets route table association
+resource "aws_route_table_association" "public_rt_a" {
+  subnet_id = aws_subnet.mlink_public_subnet-a.id
+  route_table_id = aws_route_table.mlink_public_rt.id
+}
+resource "aws_route_table_association" "public_rt_b" {
+  subnet_id = aws_subnet.mlink_public_subnet-b.id
+  route_table_id = aws_route_table.mlink_public_rt.id
+}
+resource "aws_route_table_association" "public_rt_c" {
+  subnet_id = aws_subnet.mlink_public_subnet-c.id
+  route_table_id = aws_route_table.mlink_public_rt.id
+}
+
+# Private subnets route table association
+resource "aws_route_table_association" "private_rt_a" {
+  subnet_id = aws_subnet.mlink_private_subnet-a.id
+  route_table_id = aws_route_table.mlink_private_rt.id
+}
+resource "aws_route_table_association" "private_rt_b" {
+  subnet_id = aws_subnet.mlink_private_subnet-b.id
+  route_table_id = aws_route_table.mlink_private_rt.id
+}
+resource "aws_route_table_association" "private_rt_c" {
+  subnet_id = aws_subnet.mlink_private_subnet-c.id
+  route_table_id = aws_route_table.mlink_private_rt.id
+}
+
+# DB subnets route table association
+resource "aws_route_table_association" "db_rt_a" {
+  subnet_id = aws_subnet.mlink_db_subnet-a.id
+  route_table_id = aws_route_table.mlink_db_rt.id
+}
+resource "aws_route_table_association" "db_rt_b" {
+  subnet_id = aws_subnet.mlink_db_subnet-b.id
+  route_table_id = aws_route_table.mlink_db_rt.id
+}
+resource "aws_route_table_association" "db_rt_c" {
+  subnet_id = aws_subnet.mlink_db_subnet-c.id
+  route_table_id = aws_route_table.mlink_db_rt.id
+}
+
+# Internet Gateway Definition
+resource "aws_internet_gateway" "mlink_igw_01" {
+  vpc_id = aws_vpc.mlink_vpc.id
+  tags = {
+    Name = "mlink-igw"
+  }
+}
+
+# Internet Route for public subnets
+resource "aws_route" "mlink_internet_rt_01" {
   destination_cidr_block = "0.0.0.0/0"
-  route_table_id = aws_route_table.poc_rt.id
-  gateway_id = aws_internet_gateway.poc_igw.id
-}
-
-resource "aws_security_group" "ec2_sql_sg" {
-  name = "ec2_sql_sg"
-  ingress {
-    from_port   = 1433
-    to_port     = 1433
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-  ingress {
-    from_port   = 3389
-    to_port     = 3389
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-  vpc_id = aws_vpc.sql_poc.id
-
-  tags = {
-    "Name" = "Acuity-POC"
-  }
+  route_table_id = aws_route_table.mlink_public_rt.id
+  gateway_id = aws_internet_gateway.mlink_igw_01.id
 }

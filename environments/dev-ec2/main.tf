@@ -20,6 +20,12 @@ terraform {
 
 provider "aws" {
   region = "us-east-1"
+  default_tags {
+    tags = {
+      Project = "mlink-melm-poc"
+      env = "sandbox"
+    }
+  }
 }
 
 module "vpc" {
@@ -30,8 +36,8 @@ module "ec2_sql" {
   source = "../../modules/ec2"
   ami_id = "ami-0cce4fb33302cadcb"
   instance_type = "t2.xlarge"
-  public_subnet_id = module.vpc.public_subnet_id
-  security_group_id = module.vpc.security_group_id
+  vpc_id = module.vpc.vpc_id
+  public_subnet_id = module.vpc.public_subnet_a_id
   depends_on = [ module.vpc ]
 }
 
