@@ -1,0 +1,60 @@
+name: Create EC2 instance with SQL service
+
+permissions:
+ id-token: write
+ contents: read
+
+on: 
+  workflow_dispatch:
+    inputs:
+      action:
+        type: choice
+        description: Make a choice
+        options:
+        - create
+        - destroy
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: configure aws credentials
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        role-to-assume: ${{ secrets.AWS_ROLE }}
+        role-session-name: GitHub_to_AWS_poc
+        aws-region: us-east-1
+        role-duration-seconds: 3600
+
+    - name: Set up Terraform
+      uses: hashicorp/setup-terraform@v2
+
+    - name: Initialize Terraform
+      run: |
+        cd environments/dev-ec2
+        terraform init
+
+    - name: Deploy to Development Environment
+      if: ${{ github.event.inputs.action == 'create' }}
+      env:
+        AMI_ID: ${{ secrets.DEV_AMI_ID }}
+        INSTANCE_TYPE: ${{ secrets.DEV_INSTANCE_TYPE }}
+        EC2_SQL_USER: ${{ secrets.DEV_EC2_SQL_USER }}
+        EC2_SQL_PASSWORD: ${{ secrets.DEV_C2_SQL_PASSWORD }}
+      run: |
+        cd environments/dev-ec2
+        terraform apply --auto-approve -var="instance_type=${INSTANCE_TYPE}" -var="ami_id=${AMI_ID}" -var="ec2_sql_user=${EC2_SQL_USER}" -var="ec2_sql_password=${EC2_SQL_PASSWORD}"  
+
+    - name: Destroy development Environment
+      if: ${{ github.event.inputs.action == 'destroy' }}
+      env:
+        AMI_ID: ${{ secrets.DEV_AMI_ID }}
+        INSTANCE_TYPE: ${{ secrets.DEV_INSTANCE_TYPE }}
+        EC2_SQL_USER: ${{ secrets.DEV_EC2_SQL_USER }}
+        EC2_SQL_PASSWORD: ${{ secrets.DEV_C2_SQL_PASSWORD }}
+      run: |
+        cd environments/dev
+        terraform destroy --auto-approve -var="instance_type=${INSTANCE_TYPE}" -var="ami_id=${AMI_ID}" -var="ec2_sql_user=${EC2_SQL_USER}" -var="ec2_sql_password=${EC2_SQL_PASSWORD}" 
