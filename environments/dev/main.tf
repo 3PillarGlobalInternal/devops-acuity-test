@@ -20,6 +20,12 @@ terraform {
 
 provider "aws" {
   region = "us-east-1"
+  default_tags {
+    tags = {
+      Project = "mlink-rds-poc"
+      env = "sandbox"
+    }
+  }
 }
 
 module "mysql_rds" {

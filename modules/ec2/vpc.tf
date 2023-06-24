@@ -4,7 +4,7 @@ resource "aws_vpc" "mlink_ec2_vpc" {
   enable_dns_support   = true
   enable_dns_hostnames = true
   tags = {
-    Name = "mlink-vpc"
+    Name = "mlink-ec2-vpc"
   }
 }
 
@@ -14,7 +14,7 @@ resource "aws_subnet" "mlink_ec2_public_subnet-a" {
   cidr_block        = "172.200.0.0/20"
   availability_zone = "us-east-1a"
   tags = {
-    Name = "mlink-public-subnet-a"
+    Name = "mlink-ec2-public-subnet-a"
   }
 }
 
@@ -23,7 +23,7 @@ resource "aws_subnet" "mlink_ec2_public_subnet-b" {
   cidr_block        = "172.200.48.0/20"
   availability_zone = "us-east-1b"
   tags = {
-    Name = "mlink-public-subnet-b"
+    Name = "mlink-ec2-public-subnet-b"
   }
 }
 
@@ -33,7 +33,7 @@ resource "aws_subnet" "mlink_ec2_private_subnet-a" {
   cidr_block        = "172.200.16.0/20"
   availability_zone = "us-east-1a"
   tags = {
-    Name = "mlink-private-subnet-a"
+    Name = "mlink-ec2-private-subnet-a"
   }
 }
 
@@ -42,7 +42,7 @@ resource "aws_subnet" "mlink_ec2_private_subnet-b" {
   cidr_block        = "172.200.64.0/20"
   availability_zone = "us-east-1b"
   tags = {
-    Name = "mlink-private-subnet-b"
+    Name = "mlink-ec2-private-subnet-b"
   }
 }
 
@@ -52,7 +52,7 @@ resource "aws_subnet" "mlink_ec2_db_subnet-a" {
   cidr_block        = "172.200.32.0/20"
   availability_zone = "us-east-1a"
   tags = {
-    Name = "mlink-db-subnet-a"
+    Name = "mlink-ec2-db-subnet-a"
   }
 }
 
@@ -61,7 +61,7 @@ resource "aws_subnet" "mlink_ec2_db_subnet-b" {
   cidr_block        = "172.200.80.0/20"
   availability_zone = "us-east-1b"
   tags = {
-    Name = "mlink-db-subnet-b"
+    Name = "mlink-ec2-db-subnet-b"
   }
 }
 
@@ -69,21 +69,21 @@ resource "aws_subnet" "mlink_ec2_db_subnet-b" {
 resource "aws_route_table" "mlink_ec2_public_rt" {
   vpc_id = aws_vpc.mlink_ec2_vpc.id
   tags = {
-    Name = "mlink-public-rt"
+    Name = "mlink-ec2-public-rt"
   }
 }
 
 resource "aws_route_table" "mlink_ec2_private_rt" {
   vpc_id = aws_vpc.mlink_ec2_vpc.id
   tags = {
-    Name = "mlink-private-rt"
+    Name = "mlink-ec2-private-rt"
   }
 }
 
 resource "aws_route_table" "mlink_ec2_db_rt" {
   vpc_id = aws_vpc.mlink_ec2_vpc.id
   tags = {
-    Name = "mlink-db-rt"
+    Name = "mlink-ec2-db-rt"
   }
 }
 
@@ -121,7 +121,7 @@ resource "aws_route_table_association" "db_rt_b" {
 resource "aws_internet_gateway" "mlink_ec2_igw_01" {
   vpc_id = aws_vpc.mlink_ec2_vpc.id
   tags = {
-    Name = "mlink-igw"
+    Name = "mlink-ec2-igw"
   }
 }
 

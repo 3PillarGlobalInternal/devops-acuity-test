@@ -22,7 +22,7 @@ provider "aws" {
   region = "us-east-1"
   default_tags {
     tags = {
-      Project = "mlink-melm-poc"
+      Project = "mlink-ec2-poc"
       env = "sandbox"
     }
   }
