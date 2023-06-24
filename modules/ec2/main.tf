@@ -34,7 +34,8 @@ resource "aws_security_group" "ec2_sql_instance_sg" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
-  vpc_id = var.vpc_id
+  vpc_id = aws_vpc.mlink_ec2_vpc.id
+  depends_on = [ aws_route.mlink_ec2_internet_rt_01 ]
 }
 
 resource "aws_instance" "sql_srv01" {
@@ -42,11 +43,12 @@ resource "aws_instance" "sql_srv01" {
     id = aws_launch_template.mlink_sql_instance.id
     version = aws_launch_template.mlink_sql_instance.latest_version
   }
-  subnet_id = var.public_subnet_id
+  subnet_id = aws_subnet.mlink_ec2_public_subnet-a.id
   security_groups = [aws_security_group.ec2_sql_instance_sg.id]
   tags = {
     Name = "mlink-sql-srv01"
   }
+  depends_on = [ aws_security_group.ec2_sql_instance_sg ]
 
 }
 

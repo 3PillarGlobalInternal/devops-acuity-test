@@ -13,7 +13,20 @@ resource "aws_security_group" "rds_sg" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
+  vpc_id = aws_vpc.mlink_rds_vpc.id
+  depends_on = [ aws_route.mlink_rds_internet_rt_01 ]
 }
+
+resource "aws_db_subnet_group" "rds_subnet_group" {
+  name       = "rds-subnet-group"
+  subnet_ids = [aws_subnet.mlink_rds_public_subnet-a.id, aws_subnet.mlink_rds_public_subnet-b.id]
+
+  tags = {
+    Name = "My DB subnet group"
+  }
+  depends_on = [ aws_security_group.rds_sg ]
+}
+
 
 #create a RDS Database Instance
 resource "aws_db_instance" "myinstance" {
@@ -30,6 +43,8 @@ resource "aws_db_instance" "myinstance" {
   port = 1433
   skip_final_snapshot    = true
   publicly_accessible    = true
+  db_subnet_group_name = aws_db_subnet_group.rds_subnet_group.name
+  depends_on = [ aws_db_subnet_group.rds_subnet_group ]
 }
 
 resource "null_resource" "execute_sql" {
@@ -38,5 +53,4 @@ resource "null_resource" "execute_sql" {
   }
   depends_on = [aws_db_instance.myinstance]
 }
-
 

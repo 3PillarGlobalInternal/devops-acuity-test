@@ -8,10 +8,10 @@ terraform {
 
   backend "s3" {
     # bucket name where to keep terraform state file
-    bucket  = "terraforms-pocs"
+    bucket  = "terraform-poc-us-east-1"
     profile = "default"
     encrypt = "true"
-    key     = "populate_db/terraform_state"
+    key     = "rds_sql/terraform_state"
     region  = "us-east-1"
   }
 
